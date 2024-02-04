@@ -128,7 +128,7 @@ export function Clock() {
     async function findTime() {
       try {
         const response = await axios.get(
-          `http://api.timezonedb.com/v2.1/get-time-zone?key=I1D9WHY762ZI&format=json&by=zone&zone=${selectedTimeZone}`
+          `https://api.timezonedb.com/v2.1/get-time-zone?key=I1D9WHY762ZI&format=json&by=zone&zone=${selectedTimeZone}`
         );
         const fetchTime = await new Date(response.data.formatted);
         setTime(
