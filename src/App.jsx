@@ -12,11 +12,23 @@ function App() {
 }
 
 export function Timer() {
-  let intervalId;
-
   const [timers, setTimers] = useState([]); //List
   const [newTimer, setNewTimer] = useState(""); //current one
   const [countdowns, setCountdowns] = useState([]);
+
+  useEffect(() => {
+    const intervalIds = timers.map((timer, index) => {
+      return setInterval(() => {
+        const newCountdowns = [...countdowns];
+        newCountdowns[index] = timer > 0 ? timer - 1 : 0;
+        setCountdowns(newCountdowns);
+      }, 1000);
+    });
+
+    return () => {
+      intervalIds.forEach((intervalId) => clearInterval(intervalId));
+    };
+  }, [timers, countdowns]);
 
   return (
     <div>
@@ -48,7 +60,7 @@ export function Timer() {
   function startTimer() {
     const timerValue = parseInt(newTimer);
     if (!isNaN(timerValue) && timerValue > 0) {
-      setTimer([...timers, timerValue]);
+      setTimers([...timers, timerValue]);
       setNewTimer("");
     }
   }
@@ -59,8 +71,6 @@ export function Timer() {
     setTimers(updatedTimers);
   }
 }
-
-useEffect(() => {}, [timers, countdowns]);
 
 // async function countDown(hours, minutes, seconds) {
 //   if (seconds >= 60) {
@@ -92,9 +102,7 @@ useEffect(() => {}, [timers, countdowns]);
 // }
 
 export function Clock() {
-  const [selectedTimeZone, setSelectedTimeZone] = useState(
-    "America/Los_Angeles"
-  );
+  const [selectedTimeZone, setSelectedTimeZone] = useState("Asia/Kolkata");
   const [time, setTime] = useState("");
 
   useEffect(() => {
