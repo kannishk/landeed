@@ -16,19 +16,53 @@ export function Timer() {
   const [newTimer, setNewTimer] = useState(""); //current one
   const [countdowns, setCountdowns] = useState([]);
 
+  function handleChange(e) {
+    setNewTimer(e.target.value);
+  }
+
+  function startTimer() {
+    const timerValue = parseInt(newTimer, 10);
+    if (!isNaN(timerValue) && timerValue > 0) {
+      setTimers([...timers, timerValue]);
+      setCountdowns([...countdowns, timerValue]);
+      setNewTimer("");
+    }
+  }
+
+  //mysoln
+  // function removeTimer(index) {
+  //   const updatedTimers = [...timers];
+  //   updatedTimers.splice(index, 1);
+  //   setTimers(updatedTimers);
+  // }
+
+  //Suggested
+  function removeTimer(index) {
+    const updatedTimers = timers.filter((_, i) => i !== index);
+    const updatedCountdowns = countdowns.filter((_, i) => i !== index);
+    setCountdowns(updatedCountdowns);
+    setTimers(updatedTimers);
+  }
+
   useEffect(() => {
     const intervalIds = timers.map((timer, index) => {
       return setInterval(() => {
-        const newCountdowns = [...countdowns];
-        newCountdowns[index] = timer > 0 ? timer - 1 : 0;
-        setCountdowns(newCountdowns);
+        setCountdowns((previousCountdowns) => {
+          const newCountdowns = [...previousCountdowns];
+          newCountdowns[index] =
+            newCountdowns[index] > 0 ? newCountdowns[index] - 1 : 0;
+          // console.log(newCountdowns);
+          return newCountdowns;
+        });
+        // console.log(timers);
+        // console.log(countdowns);
       }, 1000);
     });
 
     return () => {
       intervalIds.forEach((intervalId) => clearInterval(intervalId));
     };
-  }, [timers, countdowns]);
+  }, [timers]);
 
   return (
     <div>
@@ -43,33 +77,17 @@ export function Timer() {
       <input type="number" placeholder="Seconds"></input> */}
       <button onClick={startTimer}>Start the Timer</button>
       <ul>
-        {timers.map((timer, index) => {
+        {/* {useEffect(() => { */}
+        {timers.map((timer, index) => (
           <li key={index}>
             Timer {index + 1}: {countdowns[index]} seconds
             <button onClick={() => removeTimer(index)}>Remove</button>
-          </li>;
-        })}
+          </li>
+        ))}
+        {/* }, [countdowns])} */}
       </ul>
     </div>
   );
-
-  function handleChange(e) {
-    setNewTimer(e.target.value);
-  }
-
-  function startTimer() {
-    const timerValue = parseInt(newTimer);
-    if (!isNaN(timerValue) && timerValue > 0) {
-      setTimers([...timers, timerValue]);
-      setNewTimer("");
-    }
-  }
-
-  function removeTimer(index) {
-    const updatedTimers = [...timers];
-    updatedTimers.splice(index, 1);
-    setTimers(updatedTimers);
-  }
 }
 
 // async function countDown(hours, minutes, seconds) {
